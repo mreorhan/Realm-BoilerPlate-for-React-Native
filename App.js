@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 import Realm from 'realm';
-
+import { UserSchema } from './schemas/index'
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -10,18 +10,22 @@ export default class App extends Component {
 
   componentWillMount() {
     Realm.open({
-      schema: [{ name: 'User', properties: { name: 'string' } }]
+      schema: [UserSchema]
     }).then(realm => {
       realm.write(() => {
-        realm.create('User', { name: 'Emre' });
+        realm.create('User', {
+          name: 'Emre',
+          lastName: 'Orhan'
+        });
       });
-      this.setState({ realm });
+
+      this.setState({ realm: realm.objects('User') });
     });
   }
 
   render() {
     const info = this.state.realm
-      ? 'Number of dogs in this Realm: ' + this.state.realm.objects('Dog').length
+      ? 'Number of dogs in this Realm: ' + JSON.stringify(this.state.realm[0].name)
       : 'Loading...';
 
     return (
